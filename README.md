@@ -3,7 +3,7 @@ Prototipe e-Ink Bus Arrival Display (OLED 0.9inch)
 
 This project is a real-time bus arrival time display built using a Wemos D1 Mini microcontroller. It is designed to be a power-efficient, easy-to-configure, and reliable device for displaying bus arrival information from the LTA DataMall API.
 
-🛠️ Main Components
+**Main Components**
 Wemos D1 Mini: An ESP8266-based microcontroller that acts as the "brain" of the device. Wemos was chosen for its compact size, built-in Wi-Fi capabilities, and Deep Sleep feature to conserve power.
 
 0.96-inch I2C OLED Display: A small display with a 128x64 pixel resolution that is highly efficient at displaying simple text clearly.
@@ -13,7 +13,7 @@ Push Button: An optional but recommended component to allow Wi-Fi configuration 
 LTA DataMall API: The primary data source providing real-time bus arrival information.
 
 
-⚙️ System Workflow
+**System Workflow**
 This project operates in an efficient cycle:
 
 Initial Configuration (Setup): When first powered on, the Wemos will act as a Wi-Fi access point (access point) named "BusDisplayAP." You can connect to this network from your phone or laptop, and a web portal will automatically appear.
