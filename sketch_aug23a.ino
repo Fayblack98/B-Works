@@ -7,16 +7,17 @@
 #include "time.h"
 
 // WiFi & API
-const char* ssid = "arrasy-family";
-const char* password = "n@biel0418";
-const char* datamallAccountKey = "Lfr5QCrfQ/OuLYsexjuEBw==";
-const char* busStopCode = "20251";
+const char* ssid = "SSID-WIFI"; // Insert Your SSID Wifi
+const char* password = "PASS-WIFI"; //Insert Pass Wifi
+const char* datamallAccountKey = "KEY-ACCOUNT"; // Insert Account Key Data Mall Bus
+const char* busStopCode = "BusCodeStop"; // Insert BusCodeStop
 
+// Dec Button For Wake LED After Sleep
 #define BUTTON_PIN D5
 unsigned long lastButtonPress = 0;
 bool oledAwake = false;
 
-// OLED
+// Setup Screen OLED
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -32,6 +33,7 @@ void getBusDataAndDisplay();
 void setup() {
   Serial.begin(115200);
 
+//Call Button Wake up!
 pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   // Init OLED
@@ -57,7 +59,7 @@ pinMode(BUTTON_PIN, INPUT_PULLUP);
     Serial.println("\nWiFi connected!");
     displayMessage("WiFi Connected");
 
-    // Sinkronisasi waktu
+    // Sync Timer 
     configTime(8 * 3600, 0, "pool.ntp.org", "time.nist.gov");
     Serial.println("Syncing time...");
     time_t now = time(nullptr);
@@ -67,7 +69,7 @@ pinMode(BUTTON_PIN, INPUT_PULLUP);
     }
     Serial.println("Time synced!");
 
-    // Ambil data pertama kali
+    // First Get Data
     getBusDataAndDisplay();
 
     // Set WiFi Light Sleep Mode
@@ -79,7 +81,7 @@ pinMode(BUTTON_PIN, INPUT_PULLUP);
 
 void loop() {
 
-// cek tombol ditekan
+// checked token button wake up led
   if (digitalRead(BUTTON_PIN) == LOW) {
     lastButtonPress = millis();
     oledAwake = true;
@@ -88,14 +90,14 @@ void loop() {
     delay(200); // debounce
   }
 
-  // auto redup setelah 10 detik tanpa tombol
+  // auto dim after 10 sec without button
   if (oledAwake && (millis() - lastButtonPress > 15000)) {
     oledAwake = false;
     display.dim(true);   // redupkan lagi
     Serial.println("OLED Dim again");
   }
 
-     // refresh JSON tiap 1 menit (tetap berjalan)
+     // refresh JSON every 1 min
   static unsigned long lastRefresh = 0;
   if (millis() - lastRefresh > 60000) {
     lastRefresh = millis();
@@ -103,18 +105,18 @@ void loop() {
      display.dim(false);
     Serial.println("OLED Wakeup by Update!");
     delay(15000);
-    if (!oledAwake) {   // hanya redup lagi jika bukan karena tombol
+    if (!oledAwake) {   // dim again after update data
       display.dim(true);
       Serial.println("OLED Dim after Update");
     }
   }
 
-  // hemat daya: Light Sleep WiFi
+  //Light Sleep WiFi
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
 }
 
 
-// === Ambil data JSON & tampilkan ke OLED ===
+// === Get Data JSON & Show On OLED ===
 void getBusDataAndDisplay() {
   WiFiClientSecure client;
   client.setInsecure();
@@ -124,6 +126,7 @@ void getBusDataAndDisplay() {
 
   Serial.println("Requesting: " + url);
 
+//Header Json
   http.begin(client, url);
   http.addHeader("AccountKey", datamallAccountKey);
   http.addHeader("accept", "application/json");
@@ -195,6 +198,7 @@ void getBusDataAndDisplay() {
   http.end();
 }
 
+//Message Display Code Error Failed Get Parsing Json
 void displayMessage(const char* message) {
   display.clearDisplay();
   display.setTextSize(1);
